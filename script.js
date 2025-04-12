@@ -1,10 +1,19 @@
-// Select our dino element from the DOM.
+// Select dino and cactus element from the DOM.
 const dino = document.getElementById("dino");
+const cactus = document.getElementById("cactus");
+
+// cactus images
+const cactusImages = [
+  "assets/cactus1.png",
+  "assets/cactus2.png",
+  "assets/cactus3.png"
+];
+let isGameOver = false;
 
 // Variables to control the jump.
 let isJumping = false;
 let position = 0;        // Current vertical position (in pixels)
-const jumpHeight = 150;  // Maximum height of the jump
+const jumpHeight = 140;  // Maximum height of the jump
 const increment = 5;     // How many pixels to move every frame
 const frameRate = 20;    // Milliseconds between frames
 
@@ -42,5 +51,40 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-// Also add support for mobile: a tap anywhere triggers a jump.
+// Listen for touch in mobile
+document.addEventListener("touchstart", jump);
+
+// Optional: for mouse clicks on desktop.
 document.addEventListener("click", jump);
+
+// cactus randomizer
+cactus.addEventListener("animationiteration", () => {
+  const randomIndex = Math.floor(Math.random() * cactusImages.length);
+  cactus.src = cactusImages[randomIndex];
+});
+
+// function to check collision between dino and cactus
+function checkCollision() {
+  const dinoRect = dino.getBoundingClientRect();
+  const cactusRect = cactus.getBoundingClientRect();
+  
+  if (dinoRect.left < cactusRect.right && dinoRect.right > cactusRect.left && dinoRect.bottom > cactusRect.top && dinoRect.top < cactusRect.bottom) {
+    gameOver();
+  }
+}
+
+function gameOver() {
+  isGameOver = true;
+  
+  // changing dino and cactus animationPlayState
+  cactus.style.animationPlayState = "paused";
+  dino.style.animationPlayState = "paused";
+  
+  alert("Game Over");
+}
+
+let collisionCheck = setInterval(() => {
+  if (!isGameOver) {
+    checkCollision();
+  }
+}, 10);
